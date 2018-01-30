@@ -11,6 +11,10 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -28,13 +32,18 @@ public class MapsMarkerActivity extends AppCompatActivity
         implements OnMapReadyCallback,
         OnMyLocationClickListener,
         OnMyLocationButtonClickListener,
-        ActivityCompat.OnRequestPermissionsResultCallback {
+        ActivityCompat.OnRequestPermissionsResultCallback,
+        View.OnClickListener{
 
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
 
     private boolean mPermissionDenied = false;
 
     private GoogleMap mMap;
+
+    private Button btDirection;
+    private EditText etLat;
+    private EditText etLng;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +55,13 @@ public class MapsMarkerActivity extends AppCompatActivity
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        btDirection = findViewById(R.id.btDirection);
+        btDirection.setOnClickListener(this);
+
+        etLat = findViewById(R.id.etLat);
+        etLng = findViewById(R.id.etLng);
+
     }
 
     /**
@@ -62,7 +78,7 @@ public class MapsMarkerActivity extends AppCompatActivity
 
         mMap = googleMap;
 
-        LatLng saoPaulo = new LatLng(-23.533773, -46.625290);
+        LatLng saoPaulo = new LatLng(-25.533773, -46.625290);
         googleMap.addMarker(new MarkerOptions().position(saoPaulo)
                 .title("Marker in São Paulo"));
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(saoPaulo));
@@ -103,11 +119,23 @@ public class MapsMarkerActivity extends AppCompatActivity
 
     @Override
     public boolean onMyLocationButtonClick() {
+        //Toast.makeText(this, "onMyLocationButtonClick", Toast.LENGTH_SHORT).show();
         return false;
     }
 
     @Override
     public void onMyLocationClick(@NonNull Location location) {
+        //Toast.makeText(this, "onMyLocationClick", Toast.LENGTH_LONG).show();
+    }
 
+
+    @Override
+    public void onClick(View view) {
+        double lat = Double.parseDouble(etLat.getText().toString());
+        double lng = Double.parseDouble(etLng.getText().toString());
+        LatLng latLng = new LatLng(lat, lng);
+        mMap.addMarker(new MarkerOptions().position(latLng).title("New Marker"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+        //Toast.makeText(this, "onClick", Toast.LENGTH_SHORT).show();
     }
 }
